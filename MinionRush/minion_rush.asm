@@ -61,18 +61,13 @@ banana_2_width dd 15
 
 .code
 
-; procedura make_text afiseaza o litera sau o cifra la coordonatele date
-; argument_1 - simbolul de afisat (litera sau cifra)
-; argument_2 - pointer la vectorul de pixeli
-; argument_3 - pos_x
-; argument_4 - pos_y
 make_text proc
 
 	push ebp
 	mov ebp, esp
 	pusha
 	
-	mov eax, [ebp + argument_1]												 	; citim simbolul de afisat
+	mov eax, [ebp + argument_1]												 	
 	
 	cmp eax, 'A'
 	jl make_digit
@@ -98,7 +93,7 @@ make_text proc
 		jmp draw_text
 		
 	make_space:	
-		mov eax, 26																; de la 0 pana la 25 sunt litere, 26 e space
+		mov eax, 26																
 		lea esi, letters
 		
 	draw_text:
@@ -110,14 +105,14 @@ make_text proc
 		mov ecx, symbol_height
 		
 	bucla_simbol_linii:
-		mov edi, [ebp + argument_2] 											; pointer la matricea de pixeli
-		mov eax, [ebp + argument_4] 											; pointer la coord y
+		mov edi, [ebp + argument_2] 											
+		mov eax, [ebp + argument_4] 											
 		add eax, symbol_height
 		sub eax, ecx
 		mov ebx, area_width
 		mul ebx
-		add eax, [ebp + argument_3] 											; pointer la coord x
-		shl eax, 2 																; inmultim cu 4, avem un DWORD per pixel
+		add eax, [ebp + argument_3] 											
+		shl eax, 2 																
 		add edi, eax
 		push ecx
 		mov ecx, symbol_width
@@ -145,7 +140,6 @@ make_text proc
 	
 make_text endp
 
-; un macro ca sa apelam desenarea simbolului
 make_text_macro macro symbol, drawArea, x, y
 
 	push y
@@ -157,19 +151,18 @@ make_text_macro macro symbol, drawArea, x, y
 	
 endm
 
-; un macro care face o linie orizontala
 line_horizontal macro x, y, len, color
 
 local loop_line
 
-	mov eax, y																		; eax = y
+	mov eax, y																		
 	mov ebx, area_width
-	mul ebx																			; eax = y * area_width
-	add eax, x																		; eax = y * area_width + x
-	shl eax, 2																		; eax = (y * area_width + x) * 4
+	mul ebx																		
+	add eax, x																		
+	shl eax, 2																		
 	add eax, area   			
 	
-	mov ecx, len 																	; len = nr de pixeli 
+	mov ecx, len 																	
 	
 	loop_line : 
 		mov dword ptr [eax], color
@@ -177,27 +170,25 @@ local loop_line
 		loop loop_line
 endm
 
-; un macro care face o linie verticala
 line_vertical macro x, y, len, color
 
 local loop_line
 
-	mov eax, y																		; eax = y
+	mov eax, y																		
 	mov ebx, area_width
-	mul ebx																			; eax = y * area_width
-	add eax, x																		; eax = y * area_width + x
-	shl eax, 2																		; eax = (y * area_width + x) * 4
+	mul ebx																			
+	add eax, x																		
+	shl eax, 2																		
 	add eax, area   			
 	
-	mov ecx, len 																	; len = nr de pixeli 
+	mov ecx, len 																	
 	
 	loop_line : 
 		mov dword ptr [eax], color
-		add eax, area_width * 4														; area_width deoarece merge in jos
+		add eax, area_width * 4														
 		loop loop_line
 endm
 
-; un macro care deseneaza minionul
 desenare_minion macro minion_x, minion_y, minion_width, minion_height
 
 	mov edi, minion_x
@@ -213,7 +204,6 @@ desenare_minion macro minion_x, minion_y, minion_width, minion_height
 	
 endm
 
-; un macro care sterge minionul
 sterge_minion macro minion_x, minion_y, minion_width, minion_height   
 
 	mov edi, minion_x
@@ -229,7 +219,6 @@ sterge_minion macro minion_x, minion_y, minion_width, minion_height
 
 endm
 
-; un macro care deseneaza o caramida (zid)
 desenare_caramida macro caramida_x, caramida_y, caramida_width
 
 	mov edi, caramida_x
@@ -245,7 +234,6 @@ desenare_caramida macro caramida_x, caramida_y, caramida_width
 	
 endm
 
-; un macro care sterge o caramida (zid)
 sterge_caramida macro caramida_x, caramida_y, caramida_width
 
 	mov edi, caramida_x
@@ -261,7 +249,6 @@ sterge_caramida macro caramida_x, caramida_y, caramida_width
 	
 endm 
 
-; un macro care deseneaza o banana
 desenare_banana macro banana_x, banana_y, banana_width, banana_height
 
 	mov edi, banana_x
@@ -277,7 +264,6 @@ desenare_banana macro banana_x, banana_y, banana_width, banana_height
 	
 endm
 
-; un macro care sterge o banana
 sterge_banana macro banana_x, banana_y, banana_width, banana_height
 
 	mov edi, banana_x
@@ -293,12 +279,6 @@ sterge_banana macro banana_x, banana_y, banana_width, banana_height
 	
 endm
 
-
-; functia de desenare - se apeleaza la fiecare click
-; sau la fiecare interval de 200ms in care nu s-a dat click
-; argument_1 - evt (0 - initializare, 1 - click, 2 - s-a scurs intervalul fara click)
-; argument_2 - x
-; argument_3 - y
 draw proc
 
 	push ebp
@@ -311,9 +291,8 @@ draw proc
 	jz evt_click
 	
 	cmp eax, 2
-	jz evt_timer 																		; nu s-a efectuat click pe nimic
+	jz evt_timer 																	
 	
-	; se intializeaza fereastra cu pixeli gri
 	mov eax, area_width
 	mov ebx, area_height
 	mul ebx
@@ -338,7 +317,6 @@ draw proc
 		cmp eax, minion_x
 		jl left
 		
-		; daca s-a dat click in partea stanga se sterge minionul din pozitia curenta si se actualizeaza datele
 		left : 
 			
 			sterge_minion minion_x, minion_y, minion_width, minion_height 
@@ -351,7 +329,6 @@ draw proc
 			
 			jmp final
 		
-		; daca s-a dat click in partea dreapta se sterge minionul din pozitia curenta si se actualizeaza datele
 		right :
 			
 			sterge_minion minion_x, minion_y, minion_width, minion_height
@@ -370,7 +347,6 @@ draw proc
 	
 	evt_timer:
 		
-		; la fiecare event de timer, se sterg caramizile din pozitiile lor curente si se actualizeaza datele 
 		redesenare_caramizi : 
 		
 			sterge_caramida caramida_1_x, caramida_1_y, caramida_1_width
@@ -384,7 +360,6 @@ draw proc
 			mov ebx, minion_y
 			add ebx, minion_height
 			
-			; se compara coordonatele caramizilor, daca acestea au depasit partea de jos a minionului se reinitializeaza
 			cmp caramida_1_y, ebx
 			jle compara_2
 			
@@ -407,7 +382,6 @@ draw proc
 		
 			e_ok :
 		
-; la fiecare event de timer, se sterg bananele din pozitiile lor curente si se actualizeaza datele 
 		redesenare_banana :
 		
 			sterge_banana banana_1_x, banana_1_y, banana_1_width, banana_1_height
@@ -419,7 +393,6 @@ draw proc
 			mov ebx, minion_y
 			add ebx, minion_height
 			
-			; se compara coordonatele bananelor, daca acestea au depasit partea de jos a minionului se reinitializeaza
 			cmp banana_1_y, ebx
 			jle compara_banana_2
 			
@@ -436,7 +409,6 @@ draw proc
 			
 			e_ok_2 :
 			
-		; se compara coordonatele bananelor, daca acestea se afla in interiorul minionului, counter-ul se incrementeaza cu 10
 		puncte_banane : 
 			mov eax, banana_1_x
 			
@@ -493,38 +465,31 @@ draw proc
 			nu_a_consumat_2 :
 			
 	afisare_litere:
-		; afisam valoarea counter-ului curent (sute, zeci si unitati)
 		mov ebx, 10
 		mov eax, counter
 		
-		; cifra unitatilor
 		mov edx, 0
 		div ebx
 		add edx, '0'
 		make_text_macro edx, area, 30, 10
 		
-		; cifra zecilor
 		mov edx, 0
 		div ebx
 		add edx, '0'
 		make_text_macro edx, area, 20, 10
-		
-		; cifra sutelor
+
 		mov edx, 0
 		div ebx 
 		add edx, '0'
 		make_text_macro edx, area, 10, 10
 		
-		; afisam caramizile
 		desenare_caramida caramida_1_x, caramida_1_y, caramida_1_width
 		desenare_caramida caramida_2_x, caramida_2_y, caramida_2_width
 		desenare_caramida caramida_3_x, caramida_3_y, caramida_3_width
 		
-		; afisam bananele
 		desenare_banana banana_1_x, banana_1_y, banana_1_width, banana_1_height
 		desenare_banana banana_2_x, banana_2_y, banana_2_width, banana_2_height
-		
-		; afisare minionul 
+
 		desenare_minion minion_x, minion_y, minion_width, minion_height
 		
 	final_draw:
@@ -546,10 +511,7 @@ start:
 	add esp, 4
 	
 	mov area, eax
-	
-	; apelam functia de desenare a ferestrei
-	; typedef void (*DrawFunc)(int evt, int x, int y);
-	; void __cdecl BeginDrawing(const char * title, int width, int height, unsigned int * area, DrawFunc draw);
+
 	push offset draw
 	push area
 	push area_height
